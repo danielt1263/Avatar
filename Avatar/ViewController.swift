@@ -57,9 +57,7 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
 					self?.dismiss(animated: true, completion: nil)
 				case .failure(let error):
 					self?.dismiss(animated: true) {
-						let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
-						alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-						self?.present(alert, animated: true, completion: nil)
+						self?.displayInformationAlert(title: "Error", message: error.localizedDescription)
 					}
 				}
 			}
