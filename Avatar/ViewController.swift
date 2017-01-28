@@ -11,42 +11,34 @@ import UIKit
 class ViewController: UIViewController
 {
 	@IBOutlet weak var avatarView: UIImageView!
-
+	
 	var api: API!
-
+	
 	@IBAction func changeAvatar(_ sender: UITapGestureRecognizer) {
+		guard let senderView = sender.view else { fatalError("Tapped on viewless gesture recognizer?") }
 		let controller = UIImagePickerController()
 		controller.delegate = self
-		let cameraAction: UIAlertAction? = !UIImagePickerController.isSourceTypeAvailable(.camera) ? nil : UIAlertAction(title: "Camera", style: .default) { _ in
-			controller.sourceType = .camera
+		choiceIndexUsingActionSheet(title: "", message: "", choices: sourceOptions.map { $0.title }, onSourceView: senderView).then { index in
+			sourceOptions[index].action(controller)
 			self.present(controller, animated: true, completion: nil)
 		}
-		let photobinAction: UIAlertAction? = !UIImagePickerController.isSourceTypeAvailable(.photoLibrary) ? nil : UIAlertAction(title: "Photos", style: .default) { _ in
-			controller.sourceType = .photoLibrary
-			self.present(controller, animated: true, completion: nil)
-		}
-		let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-
-		let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-		if let cameraAction = cameraAction {
-			alert.addAction(cameraAction)
-		}
-		if let photobinAction = photobinAction {
-			alert.addAction(photobinAction)
-		}
-		alert.addAction(cancelAction)
-		if let popoverPresentationController = alert.popoverPresentationController,
-			let view = sender.view {
-			popoverPresentationController.sourceView = view
-			popoverPresentationController.sourceRect = view.bounds
-		}
-		present(alert, animated: true, completion: nil)
 	}
-
+	
 }
 
-extension ViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+private let sourceOptions = { () -> [(title: String, action: (UIImagePickerController) -> Void)] in
+	var result = [(title: String, action: (UIImagePickerController) -> Void)]()
+	if UIImagePickerController.isSourceTypeAvailable(.camera) {
+		result.append(("Camera", { $0.sourceType = .camera }))
+	}
+	if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
+		result.append(("Photos", { $0.sourceType = .photoLibrary }))
+	}
+	return result
+}()
 
+extension ViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+	
 	func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
 		let image = (info[UIImagePickerControllerEditedImage] as? UIImage) ?? (info[UIImagePickerControllerOriginalImage] as? UIImage)
 		if let data = image.flatMap({ UIImageJPEGRepresentation($0, 0.8)} ) {
@@ -63,7 +55,7 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
 			}
 		}
 	}
-
+	
 	func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
 		dismiss(animated: true, completion: nil)
 	}

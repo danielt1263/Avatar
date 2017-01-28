@@ -9,13 +9,17 @@
 import UIKit
 
 
+enum UserInteractionError: Error {
+	case userCanceled
+}
+
 extension UIViewController
 {
 	func choiceIndexUsingActionSheet(title: String, message: String, choices: [String], onSourceView view: UIView) -> Promise<Int> {
 		return Promise(queue: DispatchQueue.main) { fulfill, reject in
 			let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
-			let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+			let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in reject(UserInteractionError.userCanceled) })
 
 			let actions = choices.enumerated().map { offset, element in
 				UIAlertAction(title: element, style: .default, handler: { _ in fulfill(offset) })
