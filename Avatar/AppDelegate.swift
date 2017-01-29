@@ -28,14 +28,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
 class MockAPI: API {
-	func upload(avatar: Data, completion: @escaping (Result<Void>) -> Void) {
-		if shouldSucceed {
-			completion(.success())
+	func upload(avatar: Data) -> Promise<Void> {
+		return Promise { fulfill, reject in
+			if self.shouldSucceed {
+				fulfill()
+			}
+			else {
+				reject(APIError.failed)
+			}
+			self.shouldSucceed = !self.shouldSucceed
 		}
-		else {
-			completion(.failure(APIError.failed))
-		}
-		shouldSucceed = !shouldSucceed
 	}
 
 	var shouldSucceed: Bool = true

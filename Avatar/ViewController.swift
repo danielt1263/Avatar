@@ -14,49 +14,28 @@ class ViewController: UIViewController
 	
 	var api: API!
 	
+	override func viewDidLoad() {
+		super.viewDidLoad()
+	}
+	
 	@IBAction func changeAvatar(_ sender: UITapGestureRecognizer) {
 		guard let senderView = sender.view else { fatalError("Tapped on viewless gesture recognizer?") }
-		let controller = UIImagePickerController()
-		controller.delegate = self
-		choiceIndexUsingActionSheet(title: "", message: "", choices: sourceOptions.map { $0.title }, onSourceView: senderView).then { index in
-			sourceOptions[index].action(controller)
-			self.present(controller, animated: true, completion: nil)
+
+		getImage(focusView: senderView).then { image -> Promise<UIImage> in
+			guard let data = UIImageJPEGRepresentation(image, 0.8) else { throw JPEGRepresentationError.badImage }
+			return self.api.upload(avatar: data).then { image }
+		}
+		.then { image in
+			self.avatarView.image = image
+		}
+		.catch { error in
+			guard error is UserInteractionError == false || (error as! UserInteractionError) != .userCanceled else { return }
+			let _ = self.displayInformationAlert(title: "Error", message: error.localizedDescription)
 		}
 	}
 	
 }
 
-private let sourceOptions = { () -> [(title: String, action: (UIImagePickerController) -> Void)] in
-	var result = [(title: String, action: (UIImagePickerController) -> Void)]()
-	if UIImagePickerController.isSourceTypeAvailable(.camera) {
-		result.append(("Camera", { $0.sourceType = .camera }))
-	}
-	if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
-		result.append(("Photos", { $0.sourceType = .photoLibrary }))
-	}
-	return result
-}()
-
-extension ViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-	
-	func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-		let image = (info[UIImagePickerControllerEditedImage] as? UIImage) ?? (info[UIImagePickerControllerOriginalImage] as? UIImage)
-		if let data = image.flatMap({ UIImageJPEGRepresentation($0, 0.8)} ) {
-			api.upload(avatar: data) { [weak self] result in
-				switch result {
-				case .success:
-					self?.avatarView.image = image
-					self?.dismiss(animated: true, completion: nil)
-				case .failure(let error):
-					self?.dismiss(animated: true) {
-						let _ = self?.displayInformationAlert(title: "Error", message: error.localizedDescription)
-					}
-				}
-			}
-		}
-	}
-	
-	func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-		dismiss(animated: true, completion: nil)
-	}
+enum JPEGRepresentationError: Error {
+	case badImage
 }
