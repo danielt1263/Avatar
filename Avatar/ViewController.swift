@@ -13,11 +13,36 @@ class ViewController: UIViewController
 	@IBOutlet weak var avatarView: UIImageView!
 	
 	var api: API!
+	var imagePickerDelegate: ImagePickerDelegate!
+	
+	override func viewDidLoad() {
+		super.viewDidLoad()
+	}
 	
 	@IBAction func changeAvatar(_ sender: UITapGestureRecognizer) {
 		guard let senderView = sender.view else { fatalError("Tapped on viewless gesture recognizer?") }
+		
+		imagePickerDelegate = ImagePickerDelegate()
+		imagePickerDelegate.promise.then { [weak self] image in
+			if let data = UIImageJPEGRepresentation(image, 0.8) {
+				self?.api.upload(avatar: data) { result in
+					switch result {
+					case .success:
+						self?.avatarView.image = image
+						self?.dismiss(animated: true, completion: nil)
+					case .failure(let error):
+						self?.dismiss(animated: true) {
+							let _ = self?.displayInformationAlert(title: "Error", message: error.localizedDescription)
+						}
+					}
+				}
+			}
+		}.catch { [weak self] error in
+			self?.dismiss(animated: true, completion: nil)
+		}
+		
 		let controller = UIImagePickerController()
-		controller.delegate = self
+		controller.delegate = imagePickerDelegate
 		choiceIndexUsingActionSheet(title: "", message: "", choices: sourceOptions.map { $0.title }, onSourceView: senderView).then { index in
 			sourceOptions[index].action(controller)
 			self.present(controller, animated: true, completion: nil)
@@ -36,27 +61,3 @@ private let sourceOptions = { () -> [(title: String, action: (UIImagePickerContr
 	}
 	return result
 }()
-
-extension ViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-	
-	func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-		let image = (info[UIImagePickerControllerEditedImage] as? UIImage) ?? (info[UIImagePickerControllerOriginalImage] as? UIImage)
-		if let data = image.flatMap({ UIImageJPEGRepresentation($0, 0.8)} ) {
-			api.upload(avatar: data) { [weak self] result in
-				switch result {
-				case .success:
-					self?.avatarView.image = image
-					self?.dismiss(animated: true, completion: nil)
-				case .failure(let error):
-					self?.dismiss(animated: true) {
-						let _ = self?.displayInformationAlert(title: "Error", message: error.localizedDescription)
-					}
-				}
-			}
-		}
-	}
-	
-	func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-		dismiss(animated: true, completion: nil)
-	}
-}
