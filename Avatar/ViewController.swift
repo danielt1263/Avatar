@@ -13,7 +13,6 @@ class ViewController: UIViewController
 	@IBOutlet weak var avatarView: UIImageView!
 	
 	var api: API!
-	var imagePickerDelegate: ImagePickerDelegate!
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -21,43 +20,22 @@ class ViewController: UIViewController
 	
 	@IBAction func changeAvatar(_ sender: UITapGestureRecognizer) {
 		guard let senderView = sender.view else { fatalError("Tapped on viewless gesture recognizer?") }
-		
-		imagePickerDelegate = ImagePickerDelegate()
-		imagePickerDelegate.promise.then { [weak self] image in
-			if let data = UIImageJPEGRepresentation(image, 0.8) {
-				self?.api.upload(avatar: data) { result in
-					switch result {
-					case .success:
-						self?.avatarView.image = image
-						self?.dismiss(animated: true, completion: nil)
-					case .failure(let error):
-						self?.dismiss(animated: true) {
-							let _ = self?.displayInformationAlert(title: "Error", message: error.localizedDescription)
-						}
-					}
-				}
-			}
-		}.catch { [weak self] error in
-			self?.dismiss(animated: true, completion: nil)
+
+		getImage(focusView: senderView).then { image -> Promise<UIImage> in
+			guard let data = UIImageJPEGRepresentation(image, 0.8) else { throw JPEGRepresentationError.badImage }
+			return self.api.upload(avatar: data).then { image }
 		}
-		
-		let controller = UIImagePickerController()
-		controller.delegate = imagePickerDelegate
-		choiceIndexUsingActionSheet(title: "", message: "", choices: sourceOptions.map { $0.title }, onSourceView: senderView).then { index in
-			sourceOptions[index].action(controller)
-			self.present(controller, animated: true, completion: nil)
+		.then { image in
+			self.avatarView.image = image
+		}
+		.catch { error in
+			guard error is UserInteractionError == false || (error as! UserInteractionError) != .userCanceled else { return }
+			let _ = self.displayInformationAlert(title: "Error", message: error.localizedDescription)
 		}
 	}
 	
 }
 
-private let sourceOptions = { () -> [(title: String, action: (UIImagePickerController) -> Void)] in
-	var result = [(title: String, action: (UIImagePickerController) -> Void)]()
-	if UIImagePickerController.isSourceTypeAvailable(.camera) {
-		result.append(("Camera", { $0.sourceType = .camera }))
-	}
-	if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
-		result.append(("Photos", { $0.sourceType = .photoLibrary }))
-	}
-	return result
-}()
+enum JPEGRepresentationError: Error {
+	case badImage
+}

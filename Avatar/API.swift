@@ -9,11 +9,7 @@
 import Foundation
 
 
-enum Result<T> {
-	case success(T)
-	case failure(Error)
-}
-
-protocol API {
-	func upload(avatar: Data, completion: @escaping (Result<Void>) -> Void)
+protocol API
+{
+	func upload(avatar: Data) -> Promise<Void>
 }
