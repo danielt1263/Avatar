@@ -1,0 +1,33 @@
+code slide 1:
+
+• Describe code
+• Code we likely have all written.
+• Might even be in multiple places in a single app.
+† Focus on lines 60-62 in ViewController.swift
+
+code slide 2:
+
+• Split to two screens and describe how code was refactored into separate function.
+• Some probably have a function like this as well.
+• Talk about reuse potential
+† But we're here to talk about Promises.
+
+code slide 3:
+
+• Quick introduction to promises.
+  • Encapsulate a future result
+  • Allows callbacks to return values and throw exceptions, as well as perform side effects.
+• Describe how function has been changed to use a promise instead of a callback.
+† Promise isn't strictly needed here (don't care about the result) but in the next slide...
+
+code slide 4:
+
+• But here we do...
+• Describe how `choiceIndexUsingActionSheet` works.
+  • Takes care of entire user interaction from alert presentation to dismissal.
+  • Returns the user's choice which is asynchronous.
+• Describe how it is called.
+  • `sourceOptions` is an array of String/Action tuples, but could be an array of anything.
+  • Once we know the user's choice, we can act on it.
+• Discuss the notion of encapsulating user interactions.
+  • 
