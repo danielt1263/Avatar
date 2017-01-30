@@ -3,16 +3,24 @@ code slide 1:
 • Describe code
 • Code we likely have all written.
 • Might even be in multiple places in a single app.
+• Talk about the notion of "encapsulating a user interaction"
+  • There are many situations where we want the user to do something (make a choice for example.)
+  • In these times, we present data to the user modally and proceed once the user has done the required action.
+  • This is very much like the way we use an asynchronous function. Pass data in, then wait for the result.
+• I'm going to show three progressively more complex ways to encapsulate a user interaction into an asynchronous function.
 † Focus on lines 60-62 in ViewController.swift
 
-code slide 2:
+
+code slide 2 (first encapsulation):
 
 • Split to two screens and describe how code was refactored into separate function.
 • Some probably have a function like this as well.
 • Talk about reuse potential
-† But we're here to talk about Promises.
+• Talk about how this encapsulates the notion of presenting text for the user to read and waiting until (s)he is done reading.
+† But I promised to talk about promises.
 
-code slide 3:
+
+code slide 3 (first encapsulation with promises):
 
 • Quick introduction to promises.
   • Encapsulate a future result
@@ -20,7 +28,8 @@ code slide 3:
 • Describe how function has been changed to use a promise instead of a callback.
 † Promise isn't strictly needed here (don't care about the result) but in the next slide...
 
-code slide 4:
+
+code slide 4 (second encapsulation):
 
 • But here we do...
 • Describe how `choiceIndexUsingActionSheet` works.
@@ -29,5 +38,27 @@ code slide 4:
 • Describe how it is called.
   • `sourceOptions` is an array of String/Action tuples, but could be an array of anything.
   • Once we know the user's choice, we can act on it.
-• Discuss the notion of encapsulating user interactions.
-  • 
+ • Talk about how this encapsulates the notion of presenting choices to the user and waiting until (s)he makes one.
+† When you think about it, the entire process of choosing an avatar image is a user interaction. Can we encapsulate the whole thing into a single function?
+
+
+code slide 5 (third encapsulation, part 1):
+
+• This is the complex refactoring, so I will take it in two steps.
+• The first step is to extract the UIImagePickerDelegate code into a separate class.
+• Describe the code.
+  • Show how the delegate contains a promise that either returns an Image or rejects with a userCanceled error, just like choiceIndex did.
+  • Show how the view controller holds the delegate and performs an action based on the promises result.
+  • Note how a new delegate needs to be created for each changeAvatar action, because promises can only return one result.
+† Now that we have extracted the delegate into an object independent of the view controller we can finish...
+
+
+code slide 6 (third encapsulation, part 2):
+
+• Describe creation of getImage function.
+  • Show how we take advantage of the earlier choiceIndex encapsulation. 
+  • Explain how we ensure the image picker delegate stays in memory even after the getImage function exits.
+• Talk about how this encapsulates the notion of asking the user to choose an image and waiting until (s)he has done so.
+† These were three examples but I expect that you can think of many others...
+
+back to presentation:
