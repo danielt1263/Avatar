@@ -62,3 +62,6 @@ code slide 6 (third encapsulation, part 2):
 † These were three examples but I expect that you can think of many others...
 
 back to presentation:
+
+• Review points.
+• Ask highligted question.
