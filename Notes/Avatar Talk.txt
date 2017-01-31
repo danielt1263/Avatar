@@ -1,4 +1,4 @@
-code slide 1:
+code slide 1 (outline the problem and show a typical solution):
 
 • Describe code
 • Code we likely have all written.
