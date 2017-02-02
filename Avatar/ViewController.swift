@@ -23,22 +23,20 @@ class ViewController: UIViewController
 		guard let senderView = sender.view else { fatalError("Tapped on viewless gesture recognizer?") }
 		
 		imagePickerDelegate = ImagePickerDelegate()
-		imagePickerDelegate.promise.then { [weak self] image in
-			if let data = UIImageJPEGRepresentation(image, 0.8) {
-				self?.api.upload(avatar: data) { result in
-					switch result {
-					case .success:
-						self?.avatarView.image = image
-						self?.dismiss(animated: true, completion: nil)
-					case .failure(let error):
-						self?.dismiss(animated: true) {
-							let _ = self?.displayInformationAlert(title: "Error", message: error.localizedDescription)
-						}
-					}
-				}
-			}
-		}.catch { [weak self] error in
-			self?.dismiss(animated: true, completion: nil)
+		imagePickerDelegate.promise.then { [unowned self] image -> Promise<UIImage> in
+			guard let data = UIImageJPEGRepresentation(image, 0.8) else { throw JPEGRepresentationError.badImage }
+			return self.api.upload(avatar: data).then { image }
+		}
+		.then { [unowned self] image in
+			self.avatarView.image = image
+			self.dismiss(animated: true, completion: nil)
+		}
+		.always { [unowned self] in
+			self.dismiss(animated: true, completion: nil)
+		}
+		.catch { [unowned self] error in
+			guard error is UserInteractionError == false || (error as! UserInteractionError) != .userCanceled else { return }
+			let _ = self.displayInformationAlert(title: "Error", message: error.localizedDescription)
 		}
 		
 		let controller = UIImagePickerController()
@@ -61,3 +59,7 @@ private let sourceOptions = { () -> [(title: String, action: (UIImagePickerContr
 	}
 	return result
 }()
+
+enum JPEGRepresentationError: Error {
+	case badImage
+}
