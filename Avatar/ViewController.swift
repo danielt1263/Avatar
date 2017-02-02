@@ -11,10 +11,10 @@ import UIKit
 class ViewController: UIViewController
 {
 	@IBOutlet weak var avatarView: UIImageView!
-	
+
 	var api: API!
 	var imagePickerDelegate: ImagePickerDelegate!
-	
+
 	@IBAction func changeAvatar(_ sender: UITapGestureRecognizer) {
 		guard let senderView = sender.view else { fatalError("Tapped on viewless gesture recognizer?") }
 		
@@ -41,7 +41,7 @@ class ViewController: UIViewController
 			self.present(controller, animated: true, completion: nil)
 		}
 	}
-	
+
 }
 
 private let sourceOptions = { () -> [(title: String, action: (UIImagePickerController) -> Void)] in
