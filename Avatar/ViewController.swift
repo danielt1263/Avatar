@@ -11,13 +11,9 @@ import UIKit
 class ViewController: UIViewController
 {
 	@IBOutlet weak var avatarView: UIImageView!
-	
+
 	var api: API!
-	
-	override func viewDidLoad() {
-		super.viewDidLoad()
-	}
-	
+
 	@IBAction func changeAvatar(_ sender: UITapGestureRecognizer) {
 		guard let senderView = sender.view else { fatalError("Tapped on viewless gesture recognizer?") }
 
