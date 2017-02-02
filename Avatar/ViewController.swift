@@ -29,7 +29,6 @@ class ViewController: UIViewController
 		}
 		.then { [unowned self] image in
 			self.avatarView.image = image
-			self.dismiss(animated: true, completion: nil)
 		}
 		.always { [unowned self] in
 			self.dismiss(animated: true, completion: nil)
