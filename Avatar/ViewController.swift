@@ -15,10 +15,6 @@ class ViewController: UIViewController
 	var api: API!
 	var imagePickerDelegate: ImagePickerDelegate!
 	
-	override func viewDidLoad() {
-		super.viewDidLoad()
-	}
-	
 	@IBAction func changeAvatar(_ sender: UITapGestureRecognizer) {
 		guard let senderView = sender.view else { fatalError("Tapped on viewless gesture recognizer?") }
 		
