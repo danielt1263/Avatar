@@ -49,16 +49,13 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
 
 	func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
 		let image = (info[UIImagePickerControllerEditedImage] as? UIImage) ?? (info[UIImagePickerControllerOriginalImage] as? UIImage)
-		if let data = image.flatMap({ UIImageJPEGRepresentation($0, 0.8)} ) {
-			api.upload(avatar: data) { [weak self] result in
-				switch result {
-				case .success:
-					self?.avatarView.image = image
-					self?.dismiss(animated: true, completion: nil)
-				case .failure(let error):
-					self?.dismiss(animated: true) {
-						let _ = self?.displayInformationAlert(title: "Error", message: error.localizedDescription)
-					}
+		if let data = image.flatMap({ UIImageJPEGRepresentation($0, 0.8)} ) {			
+			api.upload(avatar: data).then {
+				self.avatarView.image = image
+				self.dismiss(animated: true, completion: nil)
+			}.catch { error in
+				self.dismiss(animated: true) {
+				let _ = self.displayInformationAlert(title: "Error", message: error.localizedDescription)
 				}
 			}
 		}
