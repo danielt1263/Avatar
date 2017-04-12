@@ -30,7 +30,7 @@ class ViewController: UIViewController
 			self.dismiss(animated: true, completion: nil)
 		}
 		.catch { [unowned self] error in
-			guard error is UserInteractionError == false || (error as! UserInteractionError) != .userCanceled else { return }
+			guard error as? UserInteractionError != .userCanceled else { return }
 			self.displayInformationAlert(title: "Error", message: error.localizedDescription)
 		}
 		
