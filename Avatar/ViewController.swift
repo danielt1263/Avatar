@@ -26,7 +26,7 @@ class ViewController: UIViewController
 		}
 		.catch { error in
 			guard error is UserInteractionError == false || (error as! UserInteractionError) != .userCanceled else { return }
-			let _ = self.displayInformationAlert(title: "Error", message: error.localizedDescription)
+			self.displayInformationAlert(title: "Error", message: error.localizedDescription)
 		}
 	}
 	
