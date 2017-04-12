@@ -31,7 +31,7 @@ class ViewController: UIViewController
 		}
 		.catch { [unowned self] error in
 			guard error is UserInteractionError == false || (error as! UserInteractionError) != .userCanceled else { return }
-			let _ = self.displayInformationAlert(title: "Error", message: error.localizedDescription)
+			self.displayInformationAlert(title: "Error", message: error.localizedDescription)
 		}
 		
 		let controller = UIImagePickerController()
