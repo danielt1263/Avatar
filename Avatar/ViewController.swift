@@ -25,7 +25,7 @@ class ViewController: UIViewController
 			self.avatarView.image = image
 		}
 		.catch { error in
-			guard error is UserInteractionError == false || (error as! UserInteractionError) != .userCanceled else { return }
+			guard error as? UserInteractionError != .userCanceled else { return }
 			self.displayInformationAlert(title: "Error", message: error.localizedDescription)
 		}
 	}
