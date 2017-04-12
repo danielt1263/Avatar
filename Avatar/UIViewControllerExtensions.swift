@@ -11,6 +11,7 @@ import UIKit
 
 extension UIViewController
 {
+	@discardableResult
 	func displayInformationAlert(title: String, message: String) -> Promise<Void> {
 		return Promise(queue: DispatchQueue.main) { fulfill, reject in
 			let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
