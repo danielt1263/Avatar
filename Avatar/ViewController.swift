@@ -49,7 +49,7 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
 
 	func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
 		let image = (info[UIImagePickerControllerEditedImage] as? UIImage) ?? (info[UIImagePickerControllerOriginalImage] as? UIImage)
-		if let data = image.flatMap({ UIImageJPEGRepresentation($0, 0.8)} ) {			
+		if let data = image.flatMap({ UIImageJPEGRepresentation($0, 0.8)} ) {
 			api.upload(avatar: data).then {
 				self.avatarView.image = image
 				self.dismiss(animated: true, completion: nil)
