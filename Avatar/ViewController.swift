@@ -50,15 +50,15 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
 	func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
 		let image = (info[UIImagePickerControllerEditedImage] as? UIImage) ?? (info[UIImagePickerControllerOriginalImage] as? UIImage)
 		if let data = image.flatMap({ UIImageJPEGRepresentation($0, 0.8)} ) {
-			api.upload(avatar: data) { [weak self] result in
-				switch result {
-				case .success:
-					self?.avatarView.image = image
-					self?.dismiss(animated: true, completion: nil)
-				case .failure(let error):
-					self?.dismiss(animated: true) {
-						self?.displayInformationAlert(title: "Error", message: error.localizedDescription)
-					}
+			api.upload(avatar: data).then { [weak self] in
+				self?.avatarView.image = image
+				self?.dismiss(animated: true, completion: nil)
+			}
+			.catch { [weak self] error in
+				self?.dismiss(animated: true) {
+					let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+					alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+					self?.present(alert, animated: true, completion: nil)
 				}
 			}
 		}
