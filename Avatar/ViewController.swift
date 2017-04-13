@@ -29,7 +29,6 @@ class ViewController: UIViewController
 			self.displayInformationAlert(title: "Error", message: error.localizedDescription)
 		}
 	}
-	
 }
 
 enum JPEGRepresentationError: Error {
