@@ -53,8 +53,7 @@ extension ViewController: UIImagePickerControllerDelegate, UINavigationControlle
 			api.upload(avatar: data).then {
 				self.avatarView.image = image
 				self.dismiss(animated: true, completion: nil)
-			}
-			.catch { error in
+			}.catch { error in
 				self.dismiss(animated: true) {
 					let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
 					alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
