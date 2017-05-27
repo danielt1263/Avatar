@@ -19,7 +19,7 @@ protocol API {
 	func store(movie: Movie) throws -> URL
 }
 
-//: `queryMovies` and `store(movie;)` are synchronous, blocking methods so our solution looks like this:
+//: `queryMovies` and `store(movie:)` are synchronous, blocking methods so our solution looks like this:
 
 class MovieHelper {
 	
