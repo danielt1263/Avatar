@@ -40,7 +40,7 @@ extension UIViewController
 	func displayInformationAlert(title: String, message: String) -> Promise<Void> {
 		return Promise(queue: DispatchQueue.main) { fulfill, reject in
 			let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-			alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in fulfill() }))
+			alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in fulfill(()) }))
 			self.present(alert, animated: true, completion: nil)
 		}
 	}

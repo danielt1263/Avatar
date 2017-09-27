@@ -31,7 +31,7 @@ class MockAPI: API {
 	func upload(avatar: Data) -> Promise<Void> {
 		return Promise { fulfill, reject in
 			if self.shouldSucceed {
-				fulfill()
+				fulfill(())
 			}
 			else {
 				reject(APIError.failed)
