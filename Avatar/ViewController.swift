@@ -37,20 +37,20 @@ class ViewController: UIViewController
 		let controller = UIImagePickerController()
 		controller.delegate = imagePickerDelegate
 		choiceIndexUsingActionSheet(title: "", message: "", choices: sourceOptions.map { $0.title }, onSourceView: senderView).then { index in
-			sourceOptions[index].action(controller)
+			controller.sourceType = sourceOptions[index].sourceType
 			self.present(controller, animated: true, completion: nil)
 		}
 	}
 
 }
 
-private let sourceOptions = { () -> [(title: String, action: (UIImagePickerController) -> Void)] in
-	var result = [(title: String, action: (UIImagePickerController) -> Void)]()
+private let sourceOptions: [(title: String, sourceType: UIImagePickerControllerSourceType)] = {
+	var result = [(title: String, sourceType: UIImagePickerControllerSourceType)]()
 	if UIImagePickerController.isSourceTypeAvailable(.camera) {
-		result.append(("Camera", { $0.sourceType = .camera }))
+		result.append(("Camera", .camera))
 	}
 	if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
-		result.append(("Photos", { $0.sourceType = .photoLibrary }))
+		result.append(("Photos", .photoLibrary))
 	}
 	return result
 }()
